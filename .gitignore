@@ -1,0 +1,16 @@
+# ---- Python virtual environment ----
+venv/
+
+# ---- Byte-compiled Python files ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# ---- Environment variables & secrets ----
+.env
+credentials.json
+config.py
+
+# ---- Mac OS / Windows system files ----
+.DS_Store
+Thumbs.db
