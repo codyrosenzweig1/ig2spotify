@@ -38,3 +38,26 @@ except FileNotFoundError:
 
 print("[INFO] Instagram login successful.")
 
+## Specicy Instagram profile to scrape
+TARGET_PROFILE = os.getenv("TARGET_USERNAME", None)
+if not TARGET_PROFILE:
+    raise EnvironmentError("Please set TARGET_USERNAME in your .env file.")
+
+print(f"[INFO] Fetching Reels for Instagram user: {TARGET_PROFILE}")
+
+# Retrieve the profile object
+profile = instaloader.Profile.from_username(loader.context, TARGET_PROFILE)
+
+# Iterate through posts and collect all (shortcode, video_url) for Reels
+reel_entries = []  # Will hold tuples: (shortcode, direct_video_url)
+for post in profile.get_posts():
+    # Instaloader’s .get_posts() returns each media post in reverse-chronological order
+    if not post.is_video:
+        continue  # Skip any post that’s not a video (e.g., image/carousel)
+
+    # post.shortcode is a unique identifier for that Reel (e.g., "ABC123xyz")
+    # post.video_url is the direct MP4 URL on Instagram’s CDN
+    reel_entries.append((post.shortcode, post.video_url))
+
+print(f"[INFO] Found {len(reel_entries)} Reels for @{TARGET_PROFILE}")
+
