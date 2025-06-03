@@ -1,21 +1,26 @@
-# selenium_download_reels.py
+# selenium_wire_download_reels.py
 
 """
-Use Selenium to:
-  1) Log in to Instagram,
-  2) Scrape each Reel’s page URL from /<profile>/reels/,
-  3) Visit each Reel page, extract the embedded JSON-LD block to find the real .mp4 URL,
-  4) Download the .mp4 via requests.
+Downloads Instagram Reels by capturing the real CDN URL via Selenium-Wire.
 
-Result: downloaded_reels/<profile>/<SHORTCODE>.mp4
+Workflow:
+  1) Log in to Instagram via Selenium (so we obtain valid auth cookies).
+  2) Go to /<profile>/reels/ and collect up to MAX_TO_FETCH shortcodes.
+  3) For each shortcode:
+       a) Clear the browser’s request log.
+       b) Visit https://www.instagram.com/reel/<SHORTCODE>/.
+       c) Wait until the <video> element appears and starts loading.
+       d) Inspect Selenium-Wire’s captured requests; pick out the one whose URL ends with ".mp4".
+       e) Use requests (with the same cookies) to download that URL to disk.
 """
 
 import os
 import time
-import json
 import requests
 from dotenv import load_dotenv
-from selenium import webdriver
+
+# Use seleniumwire instead of selenium
+from seleniumwire import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
@@ -29,47 +34,43 @@ load_dotenv()
 IG_USERNAME = os.getenv("IG_USERNAME")
 IG_PASSWORD = os.getenv("IG_PASSWORD")
 if not IG_USERNAME or not IG_PASSWORD:
-    raise EnvironmentError("Please set IG_USERNAME and IG_PASSWORD in a .env file")
+    raise EnvironmentError("Set IG_USERNAME and IG_PASSWORD in a .env file")
 
-TARGET_PROFILE = "romanianbits"   # Change this to the handle you want to scrape
-MAX_TO_FETCH   = 10               # How many of the newest Reels to process
+TARGET_PROFILE = "romanianbits"   # Change to the handle you want
+MAX_TO_FETCH   = 10               # Number of recent Reels to download
 
 # ───────────────────────────────────────────────────────────────────────────────
-# 2) Configure Selenium WebDriver (Chrome)
+# 2) Configure Selenium-Wire WebDriver (Chrome)
 # ───────────────────────────────────────────────────────────────────────────────
 chrome_options = Options()
-# chrome_options.add_argument("--headless")  # Uncomment if you don’t need the GUI
+# chrome_options.add_argument("--headless")  # Uncomment for headless mode
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--window-size=1200,900")
 
+# Selenium-Wire lets us inspect network requests
 driver = webdriver.Chrome(options=chrome_options)
 wait   = WebDriverWait(driver, 15)
 
 def insta_login():
     """
-    Logs in to Instagram using Selenium and dismisses the “Save Info?” popup if it appears.
+    Logs in to Instagram via Selenium, dismisses the ‘Save Login Info?’ popup if it appears.
     """
     driver.get("https://www.instagram.com/accounts/login/")
-    # Wait for the username field to appear
     wait.until(EC.presence_of_element_located((By.NAME, "username")))
 
-    # Enter credentials and submit
     driver.find_element(By.NAME, "username").send_keys(IG_USERNAME)
     driver.find_element(By.NAME, "password").send_keys(IG_PASSWORD + Keys.ENTER)
 
-    # After successful login, the “Search” box (placeholder="Search") should appear.
-    # But first Instagram might show “Save Your Login Info?”; dismiss that if present.
+    # Wait either for the search box (successful login) or the “Save Login Info?” dialog
     try:
-        # Wait up to 10s for either the Search input or the “Save Info?” popup
         wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search']")))
     except:
-        # If the Search box didn’t load within 10s, try dismissing “Save Your Login Info?”
+        # Dismiss “Save Your Login Info?” if shown
         try:
             not_now = wait.until(
                 EC.element_to_be_clickable((By.XPATH, "//div[@role='button' and text()='Not Now']"))
             )
             not_now.click()
-            # Now wait for Search input
             wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search']")))
         except:
             pass
@@ -78,18 +79,16 @@ def insta_login():
 
 def collect_reel_shortcodes():
     """
-    Navigates to https://www.instagram.com/<profile>/reels/ and returns a list
-    of up to MAX_TO_FETCH Reel shortcodes.
+    Goes to /<profile>/reels/ and returns a list of up to MAX_TO_FETCH shortcodes.
     """
     reels_page = f"https://www.instagram.com/{TARGET_PROFILE}/reels/"
     driver.get(reels_page)
-    time.sleep(3)  # let the grid of thumbnails load
+    time.sleep(3)  # Let thumbnails load
 
-    # Scroll a bit to load more thumbnails (Instagram lazy-loads as you scroll)
+    # Scroll to force lazy‐load
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(2)
 
-    # Find all <a> elements whose href contains "/<profile>/reel/<SHORTCODE>/"
     anchors = driver.find_elements(
         By.XPATH,
         f"//a[contains(@href, '/{TARGET_PROFILE}/reel/')]"
@@ -98,8 +97,7 @@ def collect_reel_shortcodes():
     shortcodes = []
     seen = set()
     for a in anchors:
-        href = a.get_attribute("href").strip("/")  
-        # e.g. "https://www.instagram.com/romanianbits/reel/DKaXVDFOZUQ"
+        href = a.get_attribute("href").strip("/")
         parts = href.split("/")
         if len(parts) >= 2 and parts[-2] == "reel":
             code = parts[-1]
@@ -112,103 +110,96 @@ def collect_reel_shortcodes():
     print(f"✔ Collected {len(shortcodes)} Reel shortcodes: {shortcodes}")
     return shortcodes
 
-def fetch_real_mp4_url(shortcode):
+def fetch_cdn_mp4_url(shortcode):
     """
-    Visits https://www.instagram.com/reel/<shortcode>/, waits for the page to load,
-    then extracts the JSON-LD <script> block to find 'contentUrl' (the true .mp4 link).
-    Returns that link, or None if not found.
+    Visits https://www.instagram.com/reel/<shortcode>/ and captures the network
+    request that fetches the actual .mp4. Returns that URL (including any signed tokens).
     """
+    # Clear any previously captured requests
+    driver.requests.clear()
+
     reel_url = f"https://www.instagram.com/reel/{shortcode}/"
     driver.get(reel_url)
 
-    # Wait for the <head> section to contain <script type="application/ld+json">
+    # Wait until the <video> element is present
     try:
-        # Wait until at least one <script type="application/ld+json"> appears
-        wait.until(EC.presence_of_element_located((By.XPATH, "//script[@type='application/ld+json']")))
+        wait.until(EC.presence_of_element_located((By.TAG_NAME, "video")))
     except:
-        print(f"   ✖ Timeout waiting for JSON-LD on {reel_url}")
+        print(f"   ✖ Timeout waiting for video element on {reel_url}")
         return None
 
-    # Grab entire page source
-    html = driver.page_source
+    # Give it a second to let the video request fire
+    time.sleep(2)
 
-    # Look for <script type="application/ld+json">…</script>
-    # There may be multiple <script> tags with type="application/ld+json", but the one we want
-    # is the first that contains "contentUrl".
-    start_tag = '<script type="application/ld+json">'
-    end_tag   = '</script>'
+    # Inspect captured requests for a URL that ends with ".mp4"
+    for request in driver.requests:
+        if request.response and request.path.endswith(".mp4"):
+            mp4_url = request.url
+            print(f"   → Captured CDN MP4 URL for {shortcode}: {mp4_url}")
+            return mp4_url
 
-    idx = html.find(start_tag)
-    while idx != -1:
-        idx_end_tag = html.find(end_tag, idx)
-        if idx_end_tag == -1:
-            break
-        json_text = html[idx + len(start_tag) : idx_end_tag].strip()
-        idx = html.find(start_tag, idx_end_tag)  # prepare for next loop if needed
-
-        try:
-            data = json.loads(json_text)
-            # In Instagram’s LD+JSON, the video link usually lives under data['contentUrl']
-            # Sometimes it’s nested under data['video']['contentUrl'], so check both.
-            if "contentUrl" in data:
-                mp4_url = data["contentUrl"]
-                print(f"   → Found real MP4 URL for {shortcode}: {mp4_url}")
-                return mp4_url
-            if "video" in data and isinstance(data["video"], dict) and "contentUrl" in data["video"]:
-                mp4_url = data["video"]["contentUrl"]
-                print(f"   → Found real MP4 URL for {shortcode}: {mp4_url}")
-                return mp4_url
-        except json.JSONDecodeError:
-            pass  # malformed JSON—skip and look for next <script>
-
-    print(f"   ✖ Could not extract JSON-LD for {reel_url}")
+    print(f"   ✖ Could not find .mp4 request for {shortcode}")
     return None
 
 def download_file(url, dest_path):
     """
-    Downloads a file from 'url' into 'dest_path' using streaming requests.
+    Downloads a file from 'url' to 'dest_path' using requests,
+    and prints status code / content-type for debugging.
     """
+    # Transfer cookies from Selenium into this session
+    session = requests.Session()
+    for c in driver.get_cookies():
+        session.cookies.set(c["name"], c["value"], domain=c["domain"])
+
+    print(f"   → Attempting to download: {url}")
     try:
-        resp = requests.get(url, stream=True, timeout=30)
+        # Use stream=True so we can inspect headers before writing
+        resp = session.get(url, stream=True, timeout=30)
+        print(f"      ← HTTP {resp.status_code}, Content-Type: {resp.headers.get('Content-Type')}")
         resp.raise_for_status()
+
+        # If it really is an MP4, Content-Type should be “video/mp4” (or similar).
+        # If it’s text/html or a redirect, we know why the file is tiny.
+
         with open(dest_path, "wb") as f:
             for chunk in resp.iter_content(chunk_size=8192):
                 if chunk:
                     f.write(chunk)
         print(f"   ✔ Saved to {dest_path}")
+
     except Exception as e:
-        print(f"   ✖ Failed to download {url}: {e}")
+        print(f"   ✖ Error downloading {url}: {e}")
+
 
 def main():
-    # 1) Log in via Selenium
+    # 1) Log in
     insta_login()
 
-    # 2) Collect Reel shortcodes
+    # 2) Grab Reel shortcodes
     codes = collect_reel_shortcodes()
     if not codes:
         print("No Reels found; exiting.")
         driver.quit()
         return
 
-    # 3) Prepare output directory
+    # 3) Ensure output directory exists
     out_dir = os.path.join("downloaded_reels", TARGET_PROFILE)
     os.makedirs(out_dir, exist_ok=True)
 
-    # 4) For each shortcode: fetch the real MP4 URL and then download it
+    # 4) For each shortcode: capture the real MP4 URL and download
     for idx, code in enumerate(codes, 1):
         print(f"\n[{idx}/{len(codes)}] Processing Reel {code}")
-        mp4_url = fetch_real_mp4_url(code)
+        mp4_url = fetch_cdn_mp4_url(code)
         if mp4_url:
             dest_file = os.path.join(out_dir, f"{code}.mp4")
-            # Skip if already exists
             if os.path.isfile(dest_file):
                 print(f"   → {dest_file} already exists; skipping.")
             else:
                 download_file(mp4_url, dest_file)
         else:
-            print(f"   → Skipping {code} (no MP4 URL)")
+            print(f"   → Skipping {code} (could not find CDN URL)")
 
-        # Small pause to avoid triggering any further rate-limit
+        # Small pause to avoid tripping any further rate limits
         time.sleep(2)
 
     print("\n✔ All done. Check the folder:", out_dir)
