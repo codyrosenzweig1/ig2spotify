@@ -4,6 +4,7 @@ import requests
 import urllib.parse
 import base64
 import json
+from datetime import datetime
 from dotenv import load_dotenv
 
 from seleniumwire import webdriver
@@ -20,7 +21,6 @@ if not IG_USERNAME or not IG_PASSWORD:
     raise EnvironmentError("Set IG_USERNAME and IG_PASSWORD in a .env file")
 
 TARGET_PROFILE = "romanianbits"
-MAX_TO_FETCH = 3
 
 chrome_options = Options()
 chrome_options.add_argument("--disable-gpu")
@@ -56,42 +56,16 @@ def insta_login():
     driver.find_element(By.NAME, "username").send_keys(IG_USERNAME)
     driver.find_element(By.NAME, "password").send_keys(IG_PASSWORD + Keys.ENTER)
     try:
-        wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search']")))
+        not_now = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@role='button' and normalize-space(text())='Not now']")))
+        not_now.click()
     except:
-        try:
-            not_now = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@role='button' and normalize-space(text())='Not now']")))
-            not_now.click()
-            wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search']")))
-        except:
-            pass
+        pass
+    time.sleep(5) # Allow time for MFA
     print("✔ Logged in successfully.")
 
-def collect_reel_shortcodes():
-    time.sleep(5)
-    reels_page = f"https://www.instagram.com/{TARGET_PROFILE}/reels/"
-    driver.get(reels_page)
-    time.sleep(3)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(2)
-    anchors = driver.find_elements(By.XPATH, f"//a[contains(@href, '/{TARGET_PROFILE}/reel/')]")
-    shortcodes = []
-    seen = set()
-    for a in anchors:
-        href = a.get_attribute("href").strip("/")
-        parts = href.split("/")
-        if len(parts) >= 2 and parts[-2] == "reel":
-            code = parts[-1]
-            if code not in seen:
-                seen.add(code)
-                shortcodes.append(code)
-            if len(shortcodes) >= MAX_TO_FETCH:
-                break
-    print(f"✔ Collected {len(shortcodes)} Reel shortcodes: {shortcodes}")
-    return shortcodes
-
-def find_audio_stream_packets():
+def find_audio_stream_packets(all_requests):
     audio_streams = {}
-    for req in driver.requests:
+    for req in all_requests:
         if not req.response or not req.path.lower().endswith(".mp4"):
             continue
         efg = extract_efg(req.url)
@@ -103,6 +77,7 @@ def find_audio_stream_packets():
             start = int(qs.get("bytestart", ["0"])[0])
             end = int(qs.get("byteend", ["0"])[0])
             audio_streams.setdefault(base, []).append((start, end, req.url))
+
     for base, segments in audio_streams.items():
         segments.sort()
         print(f"\nAudio stream base: {base}")
@@ -127,31 +102,77 @@ def download_audio_segments(stream_base, segments, dest_path):
                 print(f"   ✖ Failed to download segment {start}-{end}: {e}")
     print(f"   ✔ Audio saved to {dest_path}")
 
+def open_first_reel():
+    driver.get(f"https://www.instagram.com/{TARGET_PROFILE}/reels/")
+    time.sleep(3)
+    first_reel = wait.until(EC.presence_of_element_located((By.XPATH, f"//a[contains(@href, '/{TARGET_PROFILE}/reel/')]")))
+    first_reel.click()
+    print("✔ Opened first reel.")
+
+def watch_and_capture_packets():
+    print("⏳ Waiting for video element to appear...")
+    wait.until(EC.presence_of_element_located((By.TAG_NAME, "video")))
+    print("▶️ Video found, sleeping to let network packets accumulate...")
+    time.sleep(15)
+
+def go_to_next_reel():
+    try:
+        body = driver.find_element(By.TAG_NAME, "body")
+        body.send_keys(Keys.ARROW_RIGHT)
+        print("→ Sent ARROW_RIGHT to move to next reel.")
+        time.sleep(2)
+        return True
+    except Exception as e:
+        print(f"✖ Failed to move to next reel: {e}")
+        return False
+
 def main():
     insta_login()
-    codes = collect_reel_shortcodes()
-    if not codes:
-        print("No Reels found; exiting.")
-        driver.quit()
-        return
+    open_first_reel()
+    out_dir = os.path.join("downloaded_reels", TARGET_PROFILE)
+    os.makedirs(out_dir, exist_ok=True)
+    reel_counter = 0
+    seen_audio_bases = set()
 
-    shortcode = codes[0]
-    print(f"\n→ Visiting reel: {shortcode}")
-    driver.requests.clear()
-    driver.get(f"https://www.instagram.com/reel/{shortcode}/")
-    wait.until(EC.presence_of_element_located((By.TAG_NAME, "video")))
-    time.sleep(4)
-    audio_packets = find_audio_stream_packets()
-    if not audio_packets:
-        print("✖ No audio stream packets found.")
-    else:
-        out_dir = os.path.join("downloaded_reels", TARGET_PROFILE)
-        os.makedirs(out_dir, exist_ok=True)
-        audio_stream_base = list(audio_packets.keys())[0]
-        audio_segments = audio_packets[audio_stream_base]
-        audio_segments.sort()
-        dest_file = os.path.join(out_dir, f"{shortcode}_audio.mp4")
-        download_audio_segments(audio_stream_base, audio_segments, dest_file)
+    all_requests = []
+
+    while True:
+        driver.requests.clear()
+        watch_and_capture_packets()
+        all_requests.extend(driver.requests)
+
+        audio_packets = find_audio_stream_packets(all_requests)
+
+        # Only consider audio streams that start at byte 0
+        valid_streams = [(base, segs) for base, segs in audio_packets.items() if any(s[0] == 0 for s in segs)]
+        if not valid_streams:
+            print("✖ No valid stream with bytestart=0 found.")
+            continue
+
+        best_stream_base, best_segments = valid_streams[-1]
+
+        if best_stream_base in seen_audio_bases:
+            print("⚠ Skipping duplicate audio stream. Already processed:")
+            print(f"   Base: {best_stream_base}")
+            for start, end, _ in best_segments:
+                print(f"     - {start} to {end}")
+        else:
+            print("✔ Selected new audio stream:")
+            print(f"   Base: {best_stream_base}")
+            for start, end, _ in best_segments:
+                print(f"     - {start} to {end}")
+
+            seen_audio_bases.add(best_stream_base)
+            best_segments.sort()
+            dest_file = os.path.join(out_dir, f"reel_{reel_counter}_audio.mp4")
+            download_audio_segments(best_stream_base, best_segments, dest_file)
+            reel_counter += 1
+
+            # Remove used stream to keep list clean
+            all_requests = [r for r in all_requests if best_stream_base not in r.url]
+
+        if not go_to_next_reel():
+            break
 
     driver.quit()
 
