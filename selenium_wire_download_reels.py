@@ -14,6 +14,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+# Load Instagram credentials from .env file
 load_dotenv()
 IG_USERNAME = os.getenv("IG_USERNAME")
 IG_PASSWORD = os.getenv("IG_PASSWORD")
@@ -21,14 +22,18 @@ if not IG_USERNAME or not IG_PASSWORD:
     raise EnvironmentError("Set IG_USERNAME and IG_PASSWORD in a .env file")
 
 TARGET_PROFILE = "romanianbits"
+MAX_REELS = 100  # Limit how many reels to process
 
+# Setup Chrome with visible window
 chrome_options = Options()
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--window-size=1200,900")
 
+# Launch browser with Selenium Wire to capture network traffic
 driver = webdriver.Chrome(options=chrome_options)
 wait = WebDriverWait(driver, 15)
 
+# Clean URL by removing byte range parameters for comparison
 def clean_mp4_url(url):
     parsed = urllib.parse.urlparse(url)
     qs = urllib.parse.parse_qs(parsed.query)
@@ -37,6 +42,7 @@ def clean_mp4_url(url):
     new_query = urllib.parse.urlencode(qs, doseq=True)
     return urllib.parse.urlunparse(parsed._replace(query=new_query))
 
+# Extract and decode 'efg' query parameter to access metadata
 def extract_efg(url):
     parsed = urllib.parse.urlparse(url)
     qs = urllib.parse.parse_qs(parsed.query)
@@ -49,6 +55,7 @@ def extract_efg(url):
             return {}
     return {}
 
+# Login to Instagram and give time to manually handle MFA popups
 def insta_login():
     driver.get("https://www.instagram.com/accounts/login/")
     time.sleep(3)
@@ -60,9 +67,10 @@ def insta_login():
         not_now.click()
     except:
         pass
-    time.sleep(5) # Allow time for MFA
+    time.sleep(5)  # Allow time for MFA or other popups
     print("✔ Logged in successfully.")
 
+# Parse requests to find audio segment packets based on vencode_tag
 def find_audio_stream_packets(all_requests):
     audio_streams = {}
     for req in all_requests:
@@ -78,6 +86,7 @@ def find_audio_stream_packets(all_requests):
             end = int(qs.get("byteend", ["0"])[0])
             audio_streams.setdefault(base, []).append((start, end, req.url))
 
+    # Print out all streams for debugging
     for base, segments in audio_streams.items():
         segments.sort()
         print(f"\nAudio stream base: {base}")
@@ -85,6 +94,7 @@ def find_audio_stream_packets(all_requests):
             print(f"  bytestart={s[0]} → byteend={s[1]}")
     return audio_streams
 
+# Download audio segments sequentially and write to file
 def download_audio_segments(stream_base, segments, dest_path):
     session = requests.Session()
     for c in driver.get_cookies():
@@ -102,6 +112,7 @@ def download_audio_segments(stream_base, segments, dest_path):
                 print(f"   ✖ Failed to download segment {start}-{end}: {e}")
     print(f"   ✔ Audio saved to {dest_path}")
 
+# Open the first reel on the target profile
 def open_first_reel():
     driver.get(f"https://www.instagram.com/{TARGET_PROFILE}/reels/")
     time.sleep(3)
@@ -109,12 +120,14 @@ def open_first_reel():
     first_reel.click()
     print("✔ Opened first reel.")
 
+# Let network traffic collect after video starts playing
 def watch_and_capture_packets():
     print("⏳ Waiting for video element to appear...")
     wait.until(EC.presence_of_element_located((By.TAG_NAME, "video")))
     print("▶️ Video found, sleeping to let network packets accumulate...")
     time.sleep(15)
 
+# Simulate arrow key to move to next reel
 def go_to_next_reel():
     try:
         body = driver.find_element(By.TAG_NAME, "body")
@@ -126,6 +139,7 @@ def go_to_next_reel():
         print(f"✖ Failed to move to next reel: {e}")
         return False
 
+# Main automation loop
 def main():
     insta_login()
     open_first_reel()
@@ -133,22 +147,26 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     reel_counter = 0
     seen_audio_bases = set()
-
     all_requests = []
 
     while True:
+        if reel_counter >= MAX_REELS:
+            print(f"✅ Reached max of {MAX_REELS} reels. Exiting.")
+            break
+
         driver.requests.clear()
         watch_and_capture_packets()
         all_requests.extend(driver.requests)
 
         audio_packets = find_audio_stream_packets(all_requests)
 
-        # Only consider audio streams that start at byte 0
+        # Filter: Only streams that begin at byte 0 (likely full audio)
         valid_streams = [(base, segs) for base, segs in audio_packets.items() if any(s[0] == 0 for s in segs)]
         if not valid_streams:
             print("✖ No valid stream with bytestart=0 found.")
             continue
 
+        # Select the last matching stream as most recent
         best_stream_base, best_segments = valid_streams[-1]
 
         if best_stream_base in seen_audio_bases:
@@ -168,7 +186,7 @@ def main():
             download_audio_segments(best_stream_base, best_segments, dest_file)
             reel_counter += 1
 
-            # Remove used stream to keep list clean
+            # Cleanup: remove requests related to the used audio stream to avoid duplicates and free memory
             all_requests = [r for r in all_requests if best_stream_base not in r.url]
 
         if not go_to_next_reel():
