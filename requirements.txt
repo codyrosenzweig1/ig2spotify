@@ -2,3 +2,6 @@ instaloader
 shazamio
 pandas
 python-dotenv
+selenium
+spotipy
+python-dotenv
