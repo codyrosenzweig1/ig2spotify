@@ -7,26 +7,31 @@ def search_spotify_track(sp, title, artist):
     Returns the track URI if found, else None.
     """
     try:
-        # Build a clean, specific search query
+        # First try strict search
         query = f'track:{title} artist:{artist}'
-        print(f"🔍 Searching for: {query}")
-
-        results = sp.search(q=query, type='track', limit=5)
-
+        results = sp.search(q=query, type='track', limit=3)
         tracks = results.get('tracks', {}).get('items', [])
+
         if not tracks:
-            print("❌ No match found.")
+            # Fallback to more relaxed search
+            print("🔁 No strict match, trying relaxed query...")
+            query = f"{title} {artist}"
+            results = sp.search(q=query, type='track', limit=3)
+            tracks = results.get('tracks', {}).get('items', [])
+
+        if not tracks:
+            print("❌ Still no match.")
             return None
 
-        # Simple heuristic: return the top result
         top_track = tracks[0]
         track_uri = top_track['uri']
-        print(f"✅ Found: {top_track['name']} – {top_track['artists'][0]['name']} [URI: {track_uri}]")
+        print(f"✅ Found: {top_track['name']} – {top_track['artists'][0]['name']}")
         return track_uri
 
     except Exception as e:
         print(f"❌ Spotify search failed: {e}")
         return None
+
 
 # Test block
 if __name__ == "__main__":

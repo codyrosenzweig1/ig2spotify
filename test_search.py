@@ -1,24 +1,23 @@
 import sys
 import os
 
-# Dynamically add project root to PYTHONPATH
-PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(0, PROJECT_ROOT)
+# Ensure we can import spotify_integration
+project_root = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, project_root)
 
 from spotify_integration.auth import get_spotify_client
+from spotify_integration.csv_reader import load_recognised_songs_from_csv
 from spotify_integration.search_tracks import search_spotify_track
 
-# Simulated test entry from recognition_log.csv
-title = "Opus"
-artist = "Eric Prydz"
-
-# Get authorised Spotify client
 sp = get_spotify_client()
+songs = load_recognised_songs_from_csv("recognition_log.csv")
 
-# Search
-uri = search_spotify_track(sp, title, artist)
+print(f"🎧 Loaded {len(songs)} recognised songs from log.")
 
-if uri:
-    print(f"🎯 Track URI found: {uri}")
-else:
-    print("🔍 No track found.")
+for i, (title, artist) in enumerate(songs, 1):
+    print(f"\n[{i}/{len(songs)}] 🔍 Searching: {title} – {artist}")
+    uri = search_spotify_track(sp, title, artist)
+    if uri:
+        print(f"✅ URI: {uri}")
+    else:
+        print("❌ Not found on Spotify.")
