@@ -1,26 +1,33 @@
-import csv
+import pandas as pd
 
-def load_recognised_songs_from_csv(csv_path):
+def load_recognition_log_as_df(csv_path: str) -> pd.DataFrame:
     """
-    Loads all recognised (SUCCESS) songs from the CSV log.
-    Returns a list of (title, artist) tuples.
+    Loads the recognition log into a pandas DataFrame.
+    Filters to keep only successful ACRCloud results with both title and artist.
     """
-    songs = []
     try:
-        with open(csv_path, newline='', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                if row["title"] and row["artist"] and row["source"] == "ACRCloud":
-                    if row["title"].strip() and row["artist"].strip():
-                        songs.append((row["title"].strip(), row["artist"].strip()))
-    except FileNotFoundError:
-        print(f"❌ Could not find file: {csv_path}")
-    except KeyError as e:
-        print(f"❌ CSV missing expected column: {e}")
-    return songs
+        df = pd.read_csv(csv_path)
 
-# Quick test
-if __name__ == "__main__":
-    tracks = load_recognised_songs_from_csv("recognition_log.csv")
-    for title, artist in tracks:
-        print(f"🎵 {title} – {artist}")
+        # Ensure required columns exist
+        required_cols = {'title', 'artist', 'source'}
+        if not required_cols.issubset(df.columns):
+            missing = required_cols - set(df.columns)
+            raise ValueError(f"Missing columns in CSV: {missing}")
+
+        # Filter valid entries
+        df = df[
+            (df["title"].notna()) &
+            (df["artist"].notna()) &
+            (df["title"].str.strip() != "") &
+            (df["artist"].str.strip() != "") &
+            (df["source"] == "ACRCloud")
+        ].copy()
+
+        return df.reset_index(drop=True)
+
+    except FileNotFoundError:
+        print(f"❌ File not found: {csv_path}")
+        return pd.DataFrame()
+    except Exception as e:
+        print(f"❌ Error reading CSV: {e}")
+        return pd.DataFrame()
