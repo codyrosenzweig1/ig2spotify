@@ -22,7 +22,7 @@ if not IG_USERNAME or not IG_PASSWORD:
     raise EnvironmentError("Set IG_USERNAME and IG_PASSWORD in a .env file")
 
 TARGET_PROFILE = "romanianbits"
-MAX_REELS = 100  # Limit how many reels to process
+MAX_REELS = 15  # Limit how many reels to process
 
 # Setup Chrome with visible window
 chrome_options = Options()
@@ -67,7 +67,7 @@ def insta_login():
         not_now.click()
     except:
         pass
-    time.sleep(5)  # Allow time for MFA or other popups
+    # time.sleep(2)  # Allow time for MFA or other popups
     print("✔ Logged in successfully.")
 
 # Parse requests to find audio segment packets based on vencode_tag
@@ -125,7 +125,7 @@ def watch_and_capture_packets():
     print("⏳ Waiting for video element to appear...")
     wait.until(EC.presence_of_element_located((By.TAG_NAME, "video")))
     print("▶️ Video found, sleeping to let network packets accumulate...")
-    time.sleep(15)
+    time.sleep(10)
 
 # Simulate arrow key to move to next reel
 def go_to_next_reel():
@@ -140,59 +140,59 @@ def go_to_next_reel():
         return False
 
 # Main automation loop
-# def main():
-#     insta_login()
-#     open_first_reel()
-#     out_dir = os.path.join("downloaded_reels", TARGET_PROFILE)
-#     os.makedirs(out_dir, exist_ok=True)
-#     reel_counter = 0
-#     seen_audio_bases = set()
-#     all_requests = []
+def download_user_reels(target_profile):
+    insta_login()
+    open_first_reel()
+    out_dir = os.path.join("downloaded_reels", target_profile)
+    os.makedirs(out_dir, exist_ok=True)
+    reel_counter = 0
+    seen_audio_bases = set()
+    all_requests = []
 
-#     while True:
-#         if reel_counter >= MAX_REELS:
-#             print(f"✅ Reached max of {MAX_REELS} reels. Exiting.")
-#             break
+    while True:
+        if reel_counter >= MAX_REELS:
+            print(f"✅ Reached max of {MAX_REELS} reels. Exiting.")
+            break
 
-#         driver.requests.clear()
-#         watch_and_capture_packets()
-#         all_requests.extend(driver.requests)
+        driver.requests.clear()
+        watch_and_capture_packets()
+        all_requests.extend(driver.requests)
 
-#         audio_packets = find_audio_stream_packets(all_requests)
+        audio_packets = find_audio_stream_packets(all_requests)
 
-#         # Filter: Only streams that begin at byte 0 (likely full audio)
-#         valid_streams = [(base, segs) for base, segs in audio_packets.items() if any(s[0] == 0 for s in segs)]
-#         if not valid_streams:
-#             print("✖ No valid stream with bytestart=0 found.")
-#             continue
+        # Filter: Only streams that begin at byte 0 (likely full audio)
+        valid_streams = [(base, segs) for base, segs in audio_packets.items() if any(s[0] == 0 for s in segs)]
+        if not valid_streams:
+            print("✖ No valid stream with bytestart=0 found.")
+            continue
 
-#         # Select the last matching stream as most recent
-#         best_stream_base, best_segments = valid_streams[-1]
+        # Select the last matching stream as most recent
+        best_stream_base, best_segments = valid_streams[-1]
 
-#         if best_stream_base in seen_audio_bases:
-#             print("⚠ Skipping duplicate audio stream. Already processed:")
-#             print(f"   Base: {best_stream_base}")
-#             for start, end, _ in best_segments:
-#                 print(f"     - {start} to {end}")
-#         else:
-#             print("✔ Selected new audio stream:")
-#             print(f"   Base: {best_stream_base}")
-#             for start, end, _ in best_segments:
-#                 print(f"     - {start} to {end}")
+        if best_stream_base in seen_audio_bases:
+            print("⚠ Skipping duplicate audio stream. Already processed:")
+            print(f"   Base: {best_stream_base}")
+            for start, end, _ in best_segments:
+                print(f"     - {start} to {end}")
+        else:
+            print("✔ Selected new audio stream:")
+            print(f"   Base: {best_stream_base}")
+            for start, end, _ in best_segments:
+                print(f"     - {start} to {end}")
 
-#             seen_audio_bases.add(best_stream_base)
-#             best_segments.sort()
-#             dest_file = os.path.join(out_dir, f"reel_{reel_counter}_audio.mp4")
-#             download_audio_segments(best_stream_base, best_segments, dest_file)
-#             reel_counter += 1
+            seen_audio_bases.add(best_stream_base)
+            best_segments.sort()
+            dest_file = os.path.join(out_dir, f"{TARGET_PROFILE}_reel_{reel_counter}_audio.mp4") # change mp4 to mp3 to download straight away as mp3
+            download_audio_segments(best_stream_base, best_segments, dest_file)
+            reel_counter += 1
 
-#             # Cleanup: remove requests related to the used audio stream to avoid duplicates and free memory
-#             all_requests = [r for r in all_requests if best_stream_base not in r.url]
+            # Cleanup: remove requests related to the used audio stream to avoid duplicates and free memory
+            all_requests = [r for r in all_requests if best_stream_base not in r.url]
 
-#         if not go_to_next_reel():
-#             break
+        if not go_to_next_reel():
+            break
 
-#     driver.quit()
+    driver.quit()
 
 # if __name__ == "__main__":
 #     main()

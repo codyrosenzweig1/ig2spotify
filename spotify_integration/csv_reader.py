@@ -9,7 +9,7 @@ def load_recognition_log_as_df(csv_path: str) -> pd.DataFrame:
         df = pd.read_csv(csv_path)
 
         # Ensure required columns exist
-        required_cols = {'title', 'artist', 'source'}
+        required_cols = {'title', 'artist', 'source', 'status'}
         if not required_cols.issubset(df.columns):
             missing = required_cols - set(df.columns)
             raise ValueError(f"Missing columns in CSV: {missing}")
@@ -20,6 +20,7 @@ def load_recognition_log_as_df(csv_path: str) -> pd.DataFrame:
             (df["artist"].notna()) &
             (df["title"].str.strip() != "") &
             (df["artist"].str.strip() != "") &
+            (df["status"].str.strip() != "") &
             (df["source"] == "ACRCloud")
         ].copy()
 
