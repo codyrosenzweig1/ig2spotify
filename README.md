@@ -33,11 +33,8 @@ ACR_ACCESS_SECRET=your_acrcloud_secret
 SPOTIPY_CLIENT_ID=your_spotify_client_id
 SPOTIPY_CLIENT_SECRET=your_spotify_client_secret
 SPOTIPY_REDIRECT_URI=http://127.0.0.1:8888/callback
-Run the full pipeline
 
-bash
-Copy
-Edit
+Run the full pipeline
 python full_pipeline.py <instagram_username> [spotify_playlist_name]
 <instagram_username>: the target IG account
 
@@ -56,9 +53,6 @@ Step 4: Results are appended to recognition_log.csv
 Step 5: Recognised tracks are searched on Spotify and added to your playlist
 
 📁 Project Structure
-graphql
-Copy
-Edit
 .
 ├── full_pipeline.py
 ├── selenium_wire_download_reels.py  # grabs IG Reel audio packets
@@ -72,6 +66,7 @@ Edit
 ├── requirements.txt
 ├── .env.example
 └── README.md
+
 🔍 How It Works
 1. Downloading Reels
 Selenium-Wire logs into Instagram and navigates to the target account’s Reels feed.
@@ -79,9 +74,6 @@ Selenium-Wire logs into Instagram and navigates to the target account’s Reels 
 It intercepts the audio stream URLs and downloads only the audio packets.
 
 2. Extracting the Last 20 Seconds
-bash
-Copy
-Edit
 # Pseudocode inside recognise_audio.py
 duration = ffprobe(file.mp4)
 start    = max(0, duration – 20)
@@ -97,10 +89,6 @@ On success, we extract title and artist and log alongside a timestamp.
 recognition_log.csv is auto-created (with headers) on first run.
 
 Each row:
-
-bash
-Copy
-Edit
 timestamp, file_name, title, artist, source, spotify_uri
 spotify_uri is appended after the Spotify integration step.
 
