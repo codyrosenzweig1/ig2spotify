@@ -1,67 +1,72 @@
 import os
 import pandas as pd
+from filelock import FileLock
+
+# Columns required in both history and current CSVs
+REQUIRED_COLS = [
+    'timestamp',     # ISO timestamp of processing
+    'file_name',     # Source file name or URL
+    'title',         # Matched track title (empty if none)
+    'artist',        # Matched artist name (empty if none)
+    'source',        # Status or source code from ACRCloud
+    'spotify_uri',   # URI from Spotify lookup (empty until phase 2)
+    'account',       # Instagram account or profile identifier
+    'run_id'         # Unique identifier for this pipeline run
+]
+
+DEFAULT_HISTORY_PATH = 'recognition_history.csv'
+DEFAULT_CURRENT_PATH = 'recognition_current.csv'
 
 
-def ensure_log_exists(csv_path: str, required_cols=None) -> None:
+def _ensure_csv(path: str) -> None:
     """
-    Ensure the recognition log CSV exists with the correct headers.
-    Creates the file if missing, and adds any missing columns if the file exists.
+    Create the CSV with headers if missing, or add missing columns if exists.
     """
-    if required_cols is None:
-        required_cols = ['timestamp', 'file_name', 'title', 'artist', 'source', 'spotify_uri']
-
-    if not os.path.exists(csv_path):
-        # Create new CSV with headers
-        df_empty = pd.DataFrame(columns=required_cols)
-        df_empty.to_csv(csv_path, index=False)
-        print(f"ℹ️ Created new recognition log with headers: {required_cols}")
+    if not os.path.exists(path):
+        # New file: write only the required columns
+        pd.DataFrame(columns=REQUIRED_COLS).to_csv(path, index=False)
     else:
-        # Read existing and add missing columns
-        df = pd.read_csv(csv_path, dtype=str)
-        updated = False
-        for col in required_cols:
-            if col not in df.columns:
-                df[col] = ""
-                updated = True
-                print(f"⚠️ Added missing column '{col}' to recognition log.")
-        if updated:
-            # Reorder columns
-            df = df[required_cols]
-            df.to_csv(csv_path, index=False)
+        # Existing file: ensure all required columns are present
+        df = pd.read_csv(path, dtype=str)
+        missing = [c for c in REQUIRED_COLS if c not in df.columns]
+        if missing:
+            for c in missing:
+                df[c] = ''
+            df.to_csv(path, index=False)
 
 
-def load_recognition_log_as_df(csv_path: str) -> pd.DataFrame:
-    """
-    Loads the full recognition log into a pandas DataFrame.
-    Ensures the CSV exists with headers.
-    """
-    ensure_log_exists(csv_path)
-    return pd.read_csv(csv_path, dtype=str)
+def read_history(path: str = DEFAULT_HISTORY_PATH) -> pd.DataFrame:
+    """Return the full history of processed clips."""
+    _ensure_csv(path)
+    lock = FileLock(path + '.lock')
+    with lock:
+        return pd.read_csv(path, dtype=str)
 
 
-def load_successful_recognitions(csv_path: str) -> pd.DataFrame:
-    """
-    Returns only the successful ACRCloud recognitions (title & artist present, source 'ACRCloud').
-    """
-    df = load_recognition_log_as_df(csv_path)
-    if df.empty:
-        return df
-
-    # Filter valid entries: only where ACRCloud succeeded
-    mask = (
-        df['source'] == 'ACRCloud'
-        & df['title'].notna() & df['artist'].notna()
-        & (df['title'].str.strip() != '') & (df['artist'].str.strip() != '')
-    )
-    df_valid = df[mask].copy().reset_index(drop=True)
-    return df_valid
+def append_history(records: list[dict], path: str = DEFAULT_HISTORY_PATH) -> None:
+    """Append new records to the history CSV (ignores empty lists)."""
+    if not records:
+        return
+    _ensure_csv(path)
+    df_new = pd.DataFrame(records)
+    lock = FileLock(path + '.lock')
+    with lock:
+        df = pd.read_csv(path, dtype=str)
+        df = pd.concat([df, df_new], ignore_index=True)
+        df.to_csv(path, index=False)
 
 
-# Quick test
-if __name__ == '__main__':
-    CSV_PATH = 'recognition_log.csv'
-    df_full = load_recognition_log_as_df(CSV_PATH)
-    print(df_full.head())
-    df_success = load_successful_recognitions(CSV_PATH)
-    print("✅ Successful recognitions:")
-    print(df_success)
+def write_current(records: list[dict], path: str = DEFAULT_CURRENT_PATH) -> None:
+    """Overwrite the current-run CSV with only these records."""
+    df_new = pd.DataFrame(records, columns=REQUIRED_COLS)
+    lock = FileLock(path + '.lock')
+    with lock:
+        df_new.to_csv(path, index=False)
+
+
+def read_current(path: str = DEFAULT_CURRENT_PATH) -> pd.DataFrame:
+    """Return the records from the current run."""
+    _ensure_csv(path)
+    lock = FileLock(path + '.lock')
+    with lock:
+        return pd.read_csv(path, dtype=str)

@@ -1,17 +1,25 @@
 import os
-import time
+import uuid
+import pandas as pd
 
 from spotify_integration.auth import get_spotify_client
-from spotify_integration.csv_reader import load_recognition_log_as_df
+from spotify_integration.csv_reader import write_current, read_history
 from spotify_integration.playlist_manager import get_or_create_playlist, add_tracks_to_playlist
 from spotify_integration.search_tracks import search_spotify_track
 
 from selenium_wire_download_reels import download_user_reels, TARGET_PROFILE
 from batch_recognise import batch_process
 
-RECOGNITION_LOG_PATH = "recognition_log.csv"
-DOWNLOAD_DIR = "downloaded_reels"
-DEFAULT_PLAYLIST_NAME = "ig2spotify"
+# Use the history CSV maintained by csv_reader
+RECOGNITION_LOG_PATH = 'recognition_history.csv'
+DOWNLOAD_DIR = 'downloaded_reels'
+DEFAULT_PLAYLIST_NAME = 'ig2spotify'
+RUN_ID = uuid.uuid4().hex
+
+# Clear current-run if you're using read_current elsewhere;
+# here we rely on history only, so only write_current([]) if needed for current
+write_current([])
+
 
 def run_full_pipeline(instagram_username: str, playlist_name: str = DEFAULT_PLAYLIST_NAME):
     print(f"🚀 Starting full pipeline for Instagram account: {instagram_username}")
@@ -19,43 +27,50 @@ def run_full_pipeline(instagram_username: str, playlist_name: str = DEFAULT_PLAY
     # Step 1: Download reels
     user_dir = os.path.join(DOWNLOAD_DIR, instagram_username)
     os.makedirs(user_dir, exist_ok=True)
-
     print("📹 Downloading reels...")
-    # download_user_reels(instagram_username)  # Function already creates folder internally
+    # download_user_reels(instagram_username)
 
     # Step 2: Recognise audio
     print("🎧 Recognising audio...")
-    batch_process(user_dir)  # Calls recognise_audio.py per file and logs result in CSV
+    batch_process(user_dir)
 
     # Step 3: Load Spotify client
     print("🔑 Logging into Spotify...")
     sp = get_spotify_client()
 
-    # Step 4: Read unmatched rows from CSV
+    # Step 4: Read recognition history
     print("📥 Loading recognition log...")
-    df = load_recognition_log_as_df(RECOGNITION_LOG_PATH)
+    df = read_history(RECOGNITION_LOG_PATH)
+
+    # Replace NaN with empty strings for consistency
+    df['title'] = df['title'].fillna('').astype(str)
+    df['artist'] = df['artist'].fillna('').astype(str)
+    df['spotify_uri'] = df['spotify_uri'].fillna('').astype(str)
 
     if df.empty:
         print("⚠️ No recognised rows found.")
         return
 
-    unmatched = df[df["spotify_uri"].isna() | (df["spotify_uri"].str.strip() == "")]
+    unmatched = df[df['spotify_uri'].isna() | (df['spotify_uri'].str.strip() == '')]
     if unmatched.empty:
         print("🎵 All tracks are already matched.")
         return
 
-    # Step 5: Search tracks and update URIs
+    # Step 5: Search Spotify for URIs
     new_uris = []
     for idx, row in unmatched.iterrows():
-        title, artist = row["title"], row["artist"]
+        title, artist = row['title'], row['artist']
         print(f"🔍 Searching: {title} – {artist}")
-        uri = search_spotify_track(sp, title, artist)
-        if uri:
-            print(f"✅ Found URI: {uri}")
-            df.at[idx, "spotify_uri"] = uri
-            new_uris.append(uri)
+        if (title or artist) != '': 
+            uri = search_spotify_track(sp, title, artist)
+            if uri:
+                print(f"✅ Found URI: {uri}")
+                df.at[idx, 'spotify_uri'] = uri
+                new_uris.append(uri)
+            else:
+                print("❌ No match found.")
         else:
-            print("❌ No match found.")
+            print("❌ No search completed, missing artist or title.")
 
     # Step 6: Add to playlist
     if new_uris:
@@ -64,9 +79,10 @@ def run_full_pipeline(instagram_username: str, playlist_name: str = DEFAULT_PLAY
     else:
         print("🎵 No new tracks found to add.")
 
-    # Step 7: Save log
+    # Step 7: Save updated history log
     df.to_csv(RECOGNITION_LOG_PATH, index=False)
-    print("💾 Updated recognition_log.csv")
+    print("💾 Updated recognition history CSV")
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     run_full_pipeline(TARGET_PROFILE)

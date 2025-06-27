@@ -22,7 +22,7 @@ if not IG_USERNAME or not IG_PASSWORD:
     raise EnvironmentError("Set IG_USERNAME and IG_PASSWORD in a .env file")
 
 TARGET_PROFILE = "romanianbits"
-MAX_REELS = 15  # Limit how many reels to process
+MAX_REELS = 4  # Limit how many reels to process
 
 # Setup Chrome with visible window
 chrome_options = Options()
