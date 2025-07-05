@@ -10,14 +10,15 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
 /**
  * Kick off a new ig2spotify pipieline run for the given username 
  * @param {string} username - The Spotify username to process
+ * @param {number} limit - The maximum number of posts to process
  * @returns {Promise<{ message: string, run_id: string }>} - A promise that resolves to the response from the API
  */
 
-export function startRun(instagramUsername) {
+export function startRun(instagramUsername, limit) {
     return axios
     .post(
         `${API_BASE}/api/run`,
-    { instagram_username: instagramUsername }
+    { instagram_username: instagramUsername, limit }
 ).then(res => res.data);
 }
 

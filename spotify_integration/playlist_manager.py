@@ -1,8 +1,7 @@
 ## Here we will manage the creation and management of Spotify playlists
 from spotipy import Spotify
-from selenium_wire_download_reels import TARGET_PROFILE
 
-def get_or_create_playlist(sp: Spotify, name="ig2spotify_{TARGET_PROFILE}", description="", public=False):
+def get_or_create_playlist(sp: Spotify, name, instagram_username, description="", public=False):
     """
     Get an existing playlist or create a new one if it doesn't exist.
     Returns the playlist object.
@@ -12,7 +11,7 @@ def get_or_create_playlist(sp: Spotify, name="ig2spotify_{TARGET_PROFILE}", desc
     # Check for existing playlists
     playlists = sp.current_user_playlists(limit=50)
     for playlist in playlists['items']:
-        if playlist['name'].lower() == name.lower():
+        if playlist['name'].lower() == "ig2spotify_{instagram_username}".lower():
             print(f"🎵 Found existing playlist: {playlist['name']}")
             return playlist['id']
     

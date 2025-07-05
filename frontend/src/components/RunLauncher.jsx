@@ -7,6 +7,7 @@ import { startRun } from '../api';
 
 export default function RunLauncher({ onRunStarted}) {
     const [username, setUsername] = useState(''); // form input state
+    const [limit, setLimit] = useState(50); // limit for number of posts to process
     const [loading, setLoading] = useState(false); // spinner state
     const [error, setError] = useState(null); // stores any error messages
 
@@ -17,8 +18,8 @@ export default function RunLauncher({ onRunStarted}) {
         setError(null);
 
         try {
-            const data = await startRun(username.trim());
-            onRunStarted(data.run_id);
+            const data = await startRun(username.trim(), limit);
+            onRunStarted(data.runId);
         } catch (err) {
             setError(err.response?.data?.detail || err.message || 'Failed to start run. Please try again.');
         } finally {
@@ -41,6 +42,19 @@ export default function RunLauncher({ onRunStarted}) {
                 required
               />
             </label>
+
+            <label className="block text-sm font-medium">  
+                Number of Reels  
+                <select  
+                    value={limit}  
+                    onChange={(e) => setLimit(Number(e.target.value))}  
+                    className="mt-1 block w-full border rounded p-2"  
+                >  
+                    {[2, 50, 100, 250, 500].map(n => (  
+                    <option key={n} value={n}>{n}</option>  
+                    ))}  
+                </select>  
+            </label>  
     
             <button
               type="submit"

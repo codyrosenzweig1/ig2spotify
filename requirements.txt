@@ -6,3 +6,7 @@ selenium
 spotipy
 python-dotenv
 acrcloud-sdk-python @ git+https://github.com/acrcloud/acrcloud_sdk_python.git
+fastapi
+uvicorn
+filelock
+requests

@@ -21,8 +21,8 @@ IG_PASSWORD = os.getenv("IG_PASSWORD")
 if not IG_USERNAME or not IG_PASSWORD:
     raise EnvironmentError("Set IG_USERNAME and IG_PASSWORD in a .env file")
 
-TARGET_PROFILE = "romanianbits"
-MAX_REELS = 4  # Limit how many reels to process
+# TARGET_PROFILE = "romanianbits"
+# MAX_REELS = 4  # Limit how many reels to process
 
 # Setup Chrome with visible window
 chrome_options = Options()
@@ -113,10 +113,10 @@ def download_audio_segments(stream_base, segments, dest_path):
     print(f"   ✔ Audio saved to {dest_path}")
 
 # Open the first reel on the target profile
-def open_first_reel():
-    driver.get(f"https://www.instagram.com/{TARGET_PROFILE}/reels/")
+def open_first_reel(target_profile):
+    driver.get(f"https://www.instagram.com/{target_profile}/reels/")
     time.sleep(3)
-    first_reel = wait.until(EC.presence_of_element_located((By.XPATH, f"//a[contains(@href, '/{TARGET_PROFILE}/reel/')]")))
+    first_reel = wait.until(EC.presence_of_element_located((By.XPATH, f"//a[contains(@href, '/{target_profile}/reel/')]")))
     first_reel.click()
     print("✔ Opened first reel.")
 
@@ -140,9 +140,9 @@ def go_to_next_reel():
         return False
 
 # Main automation loop
-def download_user_reels(target_profile):
+def download_user_reels(target_profile, limit):
     insta_login()
-    open_first_reel()
+    open_first_reel(target_profile=target_profile)
     out_dir = os.path.join("downloaded_reels", target_profile)
     os.makedirs(out_dir, exist_ok=True)
     reel_counter = 0
@@ -150,8 +150,8 @@ def download_user_reels(target_profile):
     all_requests = []
 
     while True:
-        if reel_counter >= MAX_REELS:
-            print(f"✅ Reached max of {MAX_REELS} reels. Exiting.")
+        if reel_counter >= limit:
+            print(f"✅ Reached max of {limit} reels. Exiting.")
             break
 
         driver.requests.clear()
@@ -182,7 +182,7 @@ def download_user_reels(target_profile):
 
             seen_audio_bases.add(best_stream_base)
             best_segments.sort()
-            dest_file = os.path.join(out_dir, f"{TARGET_PROFILE}_reel_{reel_counter}_audio.mp4") # change mp4 to mp3 to download straight away as mp3
+            dest_file = os.path.join(out_dir, f"{target_profile}_reel_{reel_counter}_audio.mp4") # change mp4 to mp3 to download straight away as mp3
             download_audio_segments(best_stream_base, best_segments, dest_file)
             reel_counter += 1
 

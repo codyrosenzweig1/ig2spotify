@@ -1,0 +1,5 @@
+timestamp,file_name,title,artist,source,spotify_uri,account,run_id
+2025-06-27T13:06:44.288585,romanianbits_reel_0_audio.mp4,,,NO_MATCH,,,c8b87439d84347d39014605b60fa5192
+2025-06-27T13:06:47.219123,romanianbits_reel_1_audio.mp4,Brothers,Housey Doingz,SUCCESS,spotify:track:5TdojsVVPFPplD65McduPm,,4ff85c5e9d9b49dda50d6b6b17b9d5f2
+2025-06-27T13:06:49.102775,romanianbits_reel_2_audio.mp4,Maintaine,Paul Rayner,SUCCESS,spotify:track:3cNY5FHezws4Ut6bdHfrYG,,e85ba7a63511425aac9cda100136e1ca
+2025-06-27T13:06:49.436828,romanianbits_reel_3_audio.mp4,,,NO_MATCH,,,dfc67221c1c34689a1eb98c6ea27c4a3

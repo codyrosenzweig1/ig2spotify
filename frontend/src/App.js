@@ -1,23 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+// Root component of the react app
+// Shows the run launcher or the status dashboard
+import React, { useState } from 'react';
+import RunLauncher from './components/RunLauncher';
+import StatusDashboard from './components/StatusDashboard';
 
 function App() {
+  const [runId, setrunId] = useState(null);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {!runId 
+        ?<RunLauncher onRunStarted={setrunId} />
+        : <StatusDashboard runId={runId} />
+      }
     </div>
   );
 }

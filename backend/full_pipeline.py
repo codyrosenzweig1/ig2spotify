@@ -1,5 +1,4 @@
 import os
-import uuid
 import pandas as pd
 
 from spotify_integration.auth import get_spotify_client
@@ -7,28 +6,28 @@ from spotify_integration.csv_reader import write_current, read_history
 from spotify_integration.playlist_manager import get_or_create_playlist, add_tracks_to_playlist
 from spotify_integration.search_tracks import search_spotify_track
 
-from selenium_wire_download_reels import download_user_reels, TARGET_PROFILE
-from batch_recognise import batch_process
+from backend.selenium_wire_download_reels import download_user_reels
+from backend.batch_recognise import batch_process
 
 # Use the history CSV maintained by csv_reader
 RECOGNITION_LOG_PATH = 'recognition_history.csv'
 DOWNLOAD_DIR = 'downloaded_reels'
 DEFAULT_PLAYLIST_NAME = 'ig2spotify'
-RUN_ID = uuid.uuid4().hex
+# RUN_ID = uuid.uuid4().hex
 
 # Clear current-run if you're using read_current elsewhere;
 # here we rely on history only, so only write_current([]) if needed for current
 write_current([])
 
 
-def run_full_pipeline(instagram_username: str, playlist_name: str = DEFAULT_PLAYLIST_NAME):
+def run_full_pipeline(instagram_username: str, playlist_name: str = DEFAULT_PLAYLIST_NAME, limit: int = 10, run_id: str = None):
     print(f"🚀 Starting full pipeline for Instagram account: {instagram_username}")
 
     # Step 1: Download reels
     user_dir = os.path.join(DOWNLOAD_DIR, instagram_username)
     os.makedirs(user_dir, exist_ok=True)
     print("📹 Downloading reels...")
-    # download_user_reels(instagram_username)
+    download_user_reels(instagram_username, limit)
 
     # Step 2: Recognise audio
     print("🎧 Recognising audio...")
@@ -84,5 +83,5 @@ def run_full_pipeline(instagram_username: str, playlist_name: str = DEFAULT_PLAY
     print("💾 Updated recognition history CSV")
 
 
-if __name__ == '__main__':
-    run_full_pipeline(TARGET_PROFILE)
+# if __name__ == '__main__':
+#     run_full_pipeline(TARGET_PROFILE)

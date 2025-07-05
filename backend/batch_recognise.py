@@ -3,7 +3,7 @@ import sys
 import glob
 import subprocess
 
-RECOGNISE_SCRIPT = "recognise_audio.py"
+RECOGNISE_SCRIPT = "backend/recognise_audio.py"
 
 def batch_process(directory):
     if not os.path.exists(RECOGNISE_SCRIPT):
