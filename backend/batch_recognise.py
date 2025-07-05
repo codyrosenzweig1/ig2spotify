@@ -2,13 +2,14 @@ import os
 import sys
 import glob
 import subprocess
+from pathlib import Path
 
-RECOGNISE_SCRIPT = "backend/recognise_audio.py"
+PYTHON = sys.executable
+MODULE = "backend.recognise_audio"
 
 def batch_process(directory):
-    if not os.path.exists(RECOGNISE_SCRIPT):
-        print(f"❌ Could not find {RECOGNISE_SCRIPT}")
-        return
+    # make sure we're in the project room so imports work
+    project_root = Path(__file__).parent.parent.resolve()
 
     files = glob.glob(os.path.join(directory, "*.mp4")) + glob.glob(os.path.join(directory, "*.mp3"))
     files.sort()  # Optional: ensures consistent order
@@ -16,7 +17,11 @@ def batch_process(directory):
     print(f"🎧 Found {len(files)} files in {directory}")
     for i, file_path in enumerate(files):
         print(f"\n➡️  [{i+1}/{len(files)}] Processing: {file_path}")
-        subprocess.run(["python", RECOGNISE_SCRIPT, file_path])
+        subprocess.run(
+            [PYTHON, "-m", MODULE, file_path],
+            cwd=project_root,
+            check=True
+        )
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

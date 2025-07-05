@@ -16,3 +16,5 @@ config.py
 Thumbs.db
 
 .cache-ig2spotify
+
+downloaded_reels/

@@ -50,7 +50,7 @@ export default function RunLauncher({ onRunStarted}) {
                     onChange={(e) => setLimit(Number(e.target.value))}  
                     className="mt-1 block w-full border rounded p-2"  
                 >  
-                    {[2, 50, 100, 250, 500].map(n => (  
+                    {[10, 50, 100, 250, 500].map(n => (  
                     <option key={n} value={n}>{n}</option>  
                     ))}  
                 </select>  

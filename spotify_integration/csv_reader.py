@@ -14,8 +14,8 @@ REQUIRED_COLS = [
     'run_id'         # Unique identifier for this pipeline run
 ]
 
-DEFAULT_HISTORY_PATH = 'recognition_history.csv'
-DEFAULT_CURRENT_PATH = 'recognition_current.csv'
+DEFAULT_HISTORY_PATH = 'backend/logs/recognition_history.csv'
+DEFAULT_CURRENT_PATH = 'backend/logs/recognition_current.csv'
 
 
 def _ensure_csv(path: str) -> None:
