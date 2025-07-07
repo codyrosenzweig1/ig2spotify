@@ -4,6 +4,7 @@ import { startRun } from '../api';  // Your API function
 export default function RunLauncher({ onRunStarted }) {
   const [username, setUsername] = useState('');
   const [limit, setLimit] = useState(10);
+  const [playlistName, setPlaylistName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -13,10 +14,10 @@ export default function RunLauncher({ onRunStarted }) {
     setError(null);
 
     try {
-      const data = await startRun(username.trim(), limit);
+      const data = await startRun(username.trim(), limit, playlistName);
       console.log("Pipeline started:", data);
 
-      const runId = data.run_id;
+      const runId = data.runId;
       if (runId) {
         onRunStarted(runId, limit);
       } else {
@@ -56,10 +57,22 @@ export default function RunLauncher({ onRunStarted }) {
             onChange={(e) => setLimit(Number(e.target.value))}
             className="bg-[#121212] text-white border border-gray-500 rounded px-3 py-2 mt-1 w-full"
           >
-            {[10, 50, 100, 250, 500].map(n => (
+            {[3, 10, 50, 100, 250, 500].map(n => (
               <option key={n} value={n}>{n}</option>
             ))}
           </select>
+        </label>
+
+        <label className="block text-sm font-medium">
+          Playlist Name
+          <input
+            type="text"
+            value={playlistName}
+            onChange={(e) => setPlaylistName(e.target.value)}
+            className="bg-[#121212] text-white border border-gray-500 rounded px-3 py-2 mt-1 w-full"
+            placeholder="e.g. IG2Spotify"
+            required
+          />
         </label>
 
         <button

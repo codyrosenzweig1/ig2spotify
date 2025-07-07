@@ -37,7 +37,7 @@ function App() {
         console.error('Error fetching pipeline status:', error);
         clearInterval(interval);
       }
-    }, 2000); // Poll every 2 seconds
+    }, 5000); // Poll every 2 seconds
   }
 
   const handleRunStarted = (newRunId, limit) => {
@@ -62,16 +62,6 @@ function App() {
             <StatusDashboard runId={runId} />
           </div>
         )}
-
-        {/* ✅ Pipeline Steps */}
-        <div
-          className={`transition-opacity duration-500 ${
-            currentStep === -1 ? 'opacity-0' : 'opacity-100'
-          }`}
-        >
-          <PipelineSteps currentStep={currentStep} />
-        </div>
-
 
       </main>
     </div>

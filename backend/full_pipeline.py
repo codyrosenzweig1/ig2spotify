@@ -13,6 +13,7 @@ from backend.batch_recognise import batch_process
 RECOGNITION_LOG_PATH = 'backend/logs/recognition_history.csv'
 DOWNLOAD_DIR = 'downloaded_reels'
 DEFAULT_PLAYLIST_NAME = 'ig2spotify'
+
 # RUN_ID = uuid.uuid4().hex
 
 # Clear current-run if you're using read_current elsewhere;
@@ -20,18 +21,18 @@ DEFAULT_PLAYLIST_NAME = 'ig2spotify'
 write_current([])
 
 
-def run_full_pipeline(instagram_username: str, playlist_name: str = DEFAULT_PLAYLIST_NAME, limit: int = 10, run_id: str = None):
+def run_full_pipeline(instagram_username: str, playlist_name: str = DEFAULT_PLAYLIST_NAME, limit: int = 10, runId: str = None):
     print(f"🚀 Starting full pipeline for Instagram account: {instagram_username}")
 
     # Step 1: Download reels
     user_dir = os.path.join(DOWNLOAD_DIR, instagram_username)
     os.makedirs(user_dir, exist_ok=True)
     print("📹 Downloading reels...")
-    download_user_reels(instagram_username, limit)
+    download_user_reels(instagram_username, limit, runId)
 
     # Step 2: Recognise audio
     print("🎧 Recognising audio...")
-    batch_process(user_dir)
+    batch_process(user_dir, runId)
 
     # Step 3: Load Spotify client
     print("🔑 Logging into Spotify...")
@@ -73,8 +74,8 @@ def run_full_pipeline(instagram_username: str, playlist_name: str = DEFAULT_PLAY
 
     # Step 6: Add to playlist
     if new_uris:
-        playlist_id = get_or_create_playlist(sp, playlist_name, instagram_username)
-        add_tracks_to_playlist(sp, playlist_id, new_uris)
+        playlist_id = get_or_create_playlist(sp, playlist_name, instagram_username, runId)
+        add_tracks_to_playlist(sp, playlist_id, new_uris, runId)
     else:
         print("🎵 No new tracks found to add.")
 

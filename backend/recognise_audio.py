@@ -7,12 +7,13 @@ import uuid
 from dotenv import load_dotenv
 from acrcloud.recognizer import ACRCloudRecognizer
 from spotify_integration.csv_reader import append_history, write_current, read_history
+from backend.app.main import PROGRESS_DATA
 
 # -----------------------------------------------------------------------------
 # Run ID & Current Records
 # -----------------------------------------------------------------------------
-# Unique identifier for this batch run (folder or single file)
-RUN_ID = uuid.uuid4().hex
+# # Unique identifier for this batch run (folder or single file)
+RUN_ID = PROGRESS_DATA.get('runId')
 # Accumulator for this run's records
 current_records = []
 
@@ -88,7 +89,9 @@ def convert_and_trim(file_path: str) -> str | None:
             final = base + ".mp3"
             os.rename(trimmed, final)
             print(f"🔁 Converted & trimmed: {final}")
+            PROGRESS_DATA[RUN_ID]['audio_converted'] += 1
             return final
+        PROGRESS_DATA[RUN_ID]['audio_converted'] += 1
         return trimmed
 
     except Exception as e:
@@ -116,7 +119,7 @@ def recognise_audio(file_path: str) -> dict | None:
 # -----------------------------------------------------------------------------
 # Process One File
 # -----------------------------------------------------------------------------
-def process_file(original_file: str) -> None:
+def process_file(original_file: str, runId: str) -> None:
     name = os.path.basename(original_file)
     if name in get_logged_files():
         print(f"⏭️ Skipping already processed: {name}")
@@ -157,12 +160,13 @@ def process_file(original_file: str) -> None:
         'source':      status,
         'spotify_uri': '',                    # for phase 2
         'account':     os.getenv('TARGET_INSTAGRAM', ''),
-        'run_id':      RUN_ID
+        'run_id':      runId
     }
 
     # Append into history and accumulate for current
     append_history([record])
     current_records.append(record)
+
 
     # Console feedback
     if status == 'SUCCESS':
@@ -171,7 +175,6 @@ def process_file(original_file: str) -> None:
         print(f"❌ No match: {name}")
     else:
         print(f"❌ {status}: {name}")
-
 # -----------------------------------------------------------------------------
 # Process Directory
 # -----------------------------------------------------------------------------
@@ -185,15 +188,16 @@ def process_directory(dir_path: str) -> None:
 # Entry Point
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python recognise_audio.py <file_or_folder>")
+    if len(sys.argv) != 3:
+        print("Usage: python recognise_audio.py <file_or_folder> <run_id>")
         sys.exit(1)
 
     path = sys.argv[1]
+    runId = sys.argv[2]
     if os.path.isdir(path):
         process_directory(path)
     else:
-        process_file(path)
+        process_file(path, runId)
 
     # Write out the current-run CSV once everything's done
     write_current(current_records)

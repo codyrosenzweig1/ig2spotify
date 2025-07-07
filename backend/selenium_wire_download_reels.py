@@ -13,6 +13,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from backend.app.main import PROGRESS_DATA
 
 # Load Instagram credentials from .env file
 load_dotenv()
@@ -125,7 +126,7 @@ def watch_and_capture_packets():
     print("⏳ Waiting for video element to appear...")
     wait.until(EC.presence_of_element_located((By.TAG_NAME, "video")))
     print("▶️ Video found, sleeping to let network packets accumulate...")
-    time.sleep(10)
+    time.sleep(5)
 
 # Simulate arrow key to move to next reel
 def go_to_next_reel():
@@ -140,7 +141,7 @@ def go_to_next_reel():
         return False
 
 # Main automation loop
-def download_user_reels(target_profile, limit):
+def download_user_reels(target_profile, limit, runId):
     insta_login()
     open_first_reel(target_profile=target_profile)
     out_dir = os.path.join("downloaded_reels", target_profile)
@@ -188,6 +189,10 @@ def download_user_reels(target_profile, limit):
 
             # Cleanup: remove requests related to the used audio stream to avoid duplicates and free memory
             all_requests = [r for r in all_requests if best_stream_base not in r.url]
+
+        # Increment progress data
+        PROGRESS_DATA[runId]["reels_downloaded"] += 1
+        print(PROGRESS_DATA[runId]["reels_downloaded"], "reels downloaded so far.")
 
         if not go_to_next_reel():
             break

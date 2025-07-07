@@ -1,11 +1,4 @@
 timestamp,file_name,title,artist,source,spotify_uri,account,run_id
-2025-07-05T12:36:43.276004,romanianbits_reel_0_audio.mp4,,,NO_MATCH,,,e656ee745f64442bb5cc7a7331358098
-2025-07-05T12:36:50.514816,romanianbits_reel_1_audio.mp4,,,NO_MATCH,,,54514bb25139481fa686539632b646b9
-2025-07-05T12:49:32.177085,romanianbits_reel_2_audio.mp4,,,NO_MATCH,,,8b6a2e52771b47f49330fa1576ead37e
-2025-07-05T12:49:33.954561,romanianbits_reel_3_audio.mp4,Inflame,Robert Moon,SUCCESS,,,c03d2849e6b24194bab2151276e0bfa2
-2025-07-05T12:49:35.839795,romanianbits_reel_4_audio.mp4,,,NO_MATCH,,,51ae0320b8c24e0ba803091a3c13b74b
-2025-07-05T12:49:37.636050,romanianbits_reel_5_audio.mp4,,,NO_MATCH,,,02bda468d3f242bfbedfb2823cafdfd2
-2025-07-05T12:49:39.665542,romanianbits_reel_6_audio.mp4,Like U Do,Alexander East,SUCCESS,,,4016098aa267487eb812fa9d27960540
-2025-07-05T12:49:41.404218,romanianbits_reel_7_audio.mp4,,,NO_MATCH,,,df07e4b057be4422b0ceda2659556093
-2025-07-05T12:49:43.237016,romanianbits_reel_8_audio.mp4,Hay Yer,Damistas,SUCCESS,,,2bb73e1c38df48a6b844ac65aa882a59
-2025-07-05T12:49:45.079861,romanianbits_reel_9_audio.mp4,,,NO_MATCH,,,a656c45cf26c4e149092df033f3f686a
+2025-07-07T17:39:22.390560,romanianbits_reel_0_audio.mp4,Cand am venit,Floog,SUCCESS,spotify:track:3YMf9F14zOPk1eImfPin8o,,44236afea37746e5a58be34f7d49d635
+2025-07-07T17:39:26.167556,romanianbits_reel_1_audio.mp4,,,NO_MATCH,,,44236afea37746e5a58be34f7d49d635
+2025-07-07T17:39:29.150347,romanianbits_reel_2_audio.mp4,,,NO_MATCH,,,44236afea37746e5a58be34f7d49d635

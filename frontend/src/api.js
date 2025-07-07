@@ -17,11 +17,13 @@ console.log("API_BASE:", process.env.REACT_APP_API_BASE);
  * @returns {Promise<{ message: string, runId: string }>} - A promise that resolves to the response from the API
  */
 
-export function startRun(instagramUsername, limit) {
+export function startRun(instagramUsername, limit, playlistName) {
     return axios
     .post(
         `${API_BASE}/api/run`,
-    { instagram_username: instagramUsername, limit }
+    { instagram_username: instagramUsername, 
+        limit, 
+        playlist_name: playlistName}
 ).then(res => res.data);
 }
 
