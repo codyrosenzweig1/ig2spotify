@@ -47,6 +47,8 @@ def add_tracks_to_playlist(sp: Spotify, playlist_id, track_uris, runId) -> None:
     new_tracks = [uri for uri in track_urls if uri not in existing_uris]
     if not new_tracks:
         print("🎵 No new tracks to add.")
+        PROGRESS_DATA[runId]["tracks_matched"] += len(new_tracks)
+        PROGRESS_DATA[runId]["playlist_done"] = True
         return
     
     print(f"🎵 Adding {len(new_tracks)} new tracks to playlist: {playlist_id}")
@@ -54,4 +56,5 @@ def add_tracks_to_playlist(sp: Spotify, playlist_id, track_uris, runId) -> None:
     PROGRESS_DATA[runId]["tracks_matched"] += len(new_tracks)
     PROGRESS_DATA[runId]["playlist_done"] = True
     print(f"✅ Tracks added successfully")
+    return # Unsure if this is needed
 
