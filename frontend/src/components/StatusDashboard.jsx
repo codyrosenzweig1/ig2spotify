@@ -1,7 +1,7 @@
 // Displays per-step prgress bars, overall percentage and clip records for a run
 import React, { useState, useEffect } from 'react';
 import { getStatus } from '../api';
-import { PipelineSteps } from './PipelineSteps';
+import PipelineSteps from './PipelineSteps';
 
 export default function StatusDashboard({ runId }) {  
   const [status, setStatus] = useState({ steps: {}, records: [] });  
@@ -39,7 +39,7 @@ export default function StatusDashboard({ runId }) {
         <PipelineSteps steps={status.steps} />  
 
         {/* Detailed records */}  
-        <h3 className="font-semibold mb-2">Clip Records</h3>  
+        {/* <h3 className="font-semibold mb-2">Clip Records</h3> */}  
         <ul className="list-disc list-inside">  
             {status.records.map((rec, idx) => (  
             <li key={idx}>  

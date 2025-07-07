@@ -55,7 +55,7 @@ async def start_run(req: RunRequest, bg: BackgroundTasks):
     return {"message": "Pipeline started", "run_id": run_id}
 
 @app.get("/api/runs/{run_id}/status")
-async def get_run_status(run_id: str, req: RunRequest):
+async def get_run_status(run_id: str):
     """
     Return progress for a given run ID.
     """
