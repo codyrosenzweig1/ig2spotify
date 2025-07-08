@@ -13,7 +13,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from backend.app.main import PROGRESS_DATA
+from backend.progress import PROGRESS_DATA
 
 # Load Instagram credentials from .env file
 load_dotenv()
@@ -124,8 +124,12 @@ def open_first_reel(target_profile):
 # Let network traffic collect after video starts playing
 def watch_and_capture_packets():
     print("⏳ Waiting for video element to appear...")
-    wait.until(EC.presence_of_element_located((By.TAG_NAME, "video")))
-    print("▶️ Video found, sleeping to let network packets accumulate...")
+    try:
+        wait.until(EC.presence_of_element_located((By.TAG_NAME, "video")))
+        print("▶️ Video found, sleeping to let network packets accumulate...")
+    except:
+        print("Failed to find next video")
+        return False
     time.sleep(5)
 
 # Simulate arrow key to move to next reel
@@ -191,12 +195,16 @@ def download_user_reels(target_profile, limit, runId):
             all_requests = [r for r in all_requests if best_stream_base not in r.url]
 
         # Increment progress data
-        PROGRESS_DATA[runId]["reels_downloaded"] += 1
-        print(PROGRESS_DATA[runId]["reels_downloaded"], "reels downloaded so far.")
+        if runId in PROGRESS_DATA:
+            PROGRESS_DATA[runId]["reels_downloaded"] += 1
+            print(PROGRESS_DATA[runId]["reels_downloaded"], "reels downloaded so far.")
+        else:
+            print(f"⚠ WARNING: runId {runId} not found in PROGRESS_DATA")
 
-        if not go_to_next_reel():
+        if not go_to_next_reel() or not watch_and_capture_packets():
             break
-
+    
+    PROGRESS_DATA[runId]["limit"] = reel_counter # incase we break earlier due to poor internet or insta bloxking us. 
     driver.quit()
 
 # if __name__ == "__main__":

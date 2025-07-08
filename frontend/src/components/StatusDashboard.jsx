@@ -16,7 +16,7 @@ export default function StatusDashboard({ runId }) {
         setLoading(false);
 
         if (!data.playlist_done) {
-          interval = setTimeout(fetchStatus, 2000);
+          interval = setTimeout(fetchStatus, 10000);
         }
       } catch (err) {
         setError(err.message || 'Failed to fetch status');

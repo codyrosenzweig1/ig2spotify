@@ -1,4 +1,4 @@
 timestamp,file_name,title,artist,source,spotify_uri,account,run_id
-2025-07-07T17:39:22.390560,romanianbits_reel_0_audio.mp4,Cand am venit,Floog,SUCCESS,spotify:track:3YMf9F14zOPk1eImfPin8o,,44236afea37746e5a58be34f7d49d635
-2025-07-07T17:39:26.167556,romanianbits_reel_1_audio.mp4,,,NO_MATCH,,,44236afea37746e5a58be34f7d49d635
-2025-07-07T17:39:29.150347,romanianbits_reel_2_audio.mp4,,,NO_MATCH,,,44236afea37746e5a58be34f7d49d635
+2025-07-08T11:30:03.251258,romanianbits_reel_0_audio.mp4,,,NO_MATCH,,,f66a2640bd624bb7be6ee0ebb166b518
+2025-07-08T11:30:06.742534,romanianbits_reel_1_audio.mp4,The Power of the Third Pill,error.func,SUCCESS,spotify:track:6xFAoFmNATnEcByC4KTyww,,f66a2640bd624bb7be6ee0ebb166b518
+2025-07-08T11:30:10.838210,romanianbits_reel_2_audio.mp4,,,NO_MATCH,,,f66a2640bd624bb7be6ee0ebb166b518

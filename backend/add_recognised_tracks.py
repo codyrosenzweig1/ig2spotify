@@ -4,7 +4,7 @@ from spotify_integration.csv_reader import load_recognition_log_as_df
 from spotify_integration.search_tracks import search_spotify_track
 from spotify_integration.playlist_manager import get_or_create_playlist, add_tracks_to_playlist
 
-RECOGNITION_CSV_PATH = "recognition_log.csv"
+RECOGNITION_CSV_PATH = "backend/logs/recognition_log.csv"
 PLAYLIST_NAME = "ig2spotify"
 
 def main():
