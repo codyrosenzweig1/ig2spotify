@@ -2,3 +2,108 @@ timestamp,file_name,title,artist,source,spotify_uri,account,run_id
 2025-07-08T11:30:03.251258,romanianbits_reel_0_audio.mp4,,,NO_MATCH,,,f66a2640bd624bb7be6ee0ebb166b518
 2025-07-08T11:30:06.742534,romanianbits_reel_1_audio.mp4,The Power of the Third Pill,error.func,SUCCESS,spotify:track:6xFAoFmNATnEcByC4KTyww,,f66a2640bd624bb7be6ee0ebb166b518
 2025-07-08T11:30:10.838210,romanianbits_reel_2_audio.mp4,,,NO_MATCH,,,f66a2640bd624bb7be6ee0ebb166b518
+2025-07-08T18:27:31.119007,romanianbits_reel_100_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:27:35.828876,romanianbits_reel_101_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:27:39.234435,romanianbits_reel_102_audio.mp4,Dance I Said,Ku De Ta,SUCCESS,spotify:track:2dw1LIQMpooN5OXWLo9M8z,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:27:42.732385,romanianbits_reel_103_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:27:46.672761,romanianbits_reel_104_audio.mp4,Green Tea (Temenon Remix),Cy Hanson,SUCCESS,spotify:track:7rA6VSauQyPbvOz3z8yxLc,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:27:50.953817,romanianbits_reel_105_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:27:55.234177,romanianbits_reel_106_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:27:59.695007,romanianbits_reel_107_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:28:04.075276,romanianbits_reel_10_audio.mp4,Upon My Shoulders (Nifra Extended Remix),Markus Schulz,SUCCESS,spotify:track:40Bw5CKZgcF3tyxXgZVVaO,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:28:09.667470,romanianbits_reel_11_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:28:14.732352,romanianbits_reel_12_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:28:19.202929,romanianbits_reel_13_audio.mp4,Inflame,Robert Moon,SUCCESS,spotify:track:792HwhrdO3ErRKL5yRe4Ge,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:28:23.321805,romanianbits_reel_14_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:28:27.327637,romanianbits_reel_15_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:28:31.581837,romanianbits_reel_16_audio.mp4,Like U Do,Alexander East,SUCCESS,spotify:track:4x5omdgxr3AQTQsPypwoKq,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:28:35.654119,romanianbits_reel_17_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:28:40.087791,romanianbits_reel_18_audio.mp4,Hay Yer,Damistas,SUCCESS,spotify:track:5PGRwkY2xbzssU3jg6dQ3s,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:28:44.277979,romanianbits_reel_19_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:28:51.397294,romanianbits_reel_20_audio.mp4,Di Amore (Original Mix),Tino,SUCCESS,spotify:track:17r3o9a9JrASMxd5md6rJr,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:28:56.100689,romanianbits_reel_21_audio.mp4,Butterfly Drop (Original Mix),Cosmjn,SUCCESS,spotify:track:1yeUcA8cGzT2Y7Crt9hqXw,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:00.276467,romanianbits_reel_22_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:04.353591,romanianbits_reel_23_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:08.730879,romanianbits_reel_24_audio.mp4,Santa Rosa (SOSA Remix),Josh Lee,SUCCESS,spotify:track:44Ii5oGnKaJl2MOZyQ7LYo,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:12.996716,romanianbits_reel_25_audio.mp4,Walking On Ma Beat,Elay Lazutkin,SUCCESS,spotify:track:2ITf8OC8QssdtQ1kYaXnrN,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:17.198909,romanianbits_reel_26_audio.mp4,Smiling Through Wide Eyes,"Jozef K, Winter Son",SUCCESS,spotify:track:5EUUJGSNGMF3dbehhBwoeC,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:21.203258,romanianbits_reel_27_audio.mp4,Initiate Robot (Original Mix),Locklead,SUCCESS,spotify:track:3PkMtejp5TyP5wDMi3czf6,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:25.140794,romanianbits_reel_28_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:29.390318,romanianbits_reel_29_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:35.921371,romanianbits_reel_30_audio.mp4,Jonah's Groove (Original Mix),Lee Jeffrey (UK),SUCCESS,spotify:track:2f6THNNAOmlYnJfNtvT2qO,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:41.021372,romanianbits_reel_31_audio.mp4,Brothers,Housey Doingz,SUCCESS,spotify:track:5TdojsVVPFPplD65McduPm,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:45.150650,romanianbits_reel_32_audio.mp4,Maintaine,Paul Rayner,SUCCESS,spotify:track:3cNY5FHezws4Ut6bdHfrYG,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:48.913213,romanianbits_reel_33_audio.mp4,Diode Ladder,Jesper Dahlback,SUCCESS,spotify:track:22nYtM7gIbR5Zqy4XiGjhn,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:53.221602,romanianbits_reel_34_audio.mp4,Trailer Song (feat. Drakeubson),Leafy,SUCCESS,spotify:track:05bep5xQz0QR74vZLdnodD,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:29:57.718616,romanianbits_reel_35_audio.mp4,Rhythm Spirit,Terry Francis,SUCCESS,spotify:track:6oDiv45dkPnv2qhHxdFX1o,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:01.771665,romanianbits_reel_36_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:06.270336,romanianbits_reel_37_audio.mp4,Oohaah,Pure Science,SUCCESS,spotify:track:0zzKIjDvsUDMyPlpEMQvoi,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:10.765468,romanianbits_reel_38_audio.mp4,Hey Frankie,Hatiras,SUCCESS,spotify:track:55hU2hGJpK78GbJvVOzhpc,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:14.716560,romanianbits_reel_39_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:18.646891,romanianbits_reel_3_audio.mp4,Cand am venit,Floog,SUCCESS,spotify:track:3YMf9F14zOPk1eImfPin8o,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:22.537410,romanianbits_reel_40_audio.mp4,Love Tilt,Grant Dell,SUCCESS,spotify:track:2NsiLfniadgkMZLB2Glkfe,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:26.562230,romanianbits_reel_41_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:30.518389,romanianbits_reel_42_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:34.819661,romanianbits_reel_43_audio.mp4,Rhythm Spirit (feat. Ricardo Afonso),Terry Francis,SUCCESS,spotify:track:6oDiv45dkPnv2qhHxdFX1o,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:39.104563,romanianbits_reel_44_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:42.943895,romanianbits_reel_45_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:47.003902,romanianbits_reel_46_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:50.989996,romanianbits_reel_47_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:55.125018,romanianbits_reel_48_audio.mp4,Freak Like U,Masarima,SUCCESS,spotify:track:4Sv8UfMtBHBzR6n0yOlApc,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:30:58.901145,romanianbits_reel_49_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:03.048465,romanianbits_reel_4_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:07.950899,romanianbits_reel_50_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:12.390905,romanianbits_reel_51_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:16.541202,romanianbits_reel_52_audio.mp4,Supernova (Original Mix),Philipp Lichtblau,SUCCESS,spotify:track:1HkRDJd4e3YQV5mcaqFbRE,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:20.445333,romanianbits_reel_53_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:24.559874,romanianbits_reel_54_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:29.093548,romanianbits_reel_55_audio.mp4,"Audit, Preview, Approve (Original Version)",Jussi-Pekka,SUCCESS,spotify:track:520SqV2FzNOeAEs92LrPQt,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:34.645382,romanianbits_reel_56_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:39.915249,romanianbits_reel_57_audio.mp4,Psycho Killa (Wah-Wah Mix),HearThuG,SUCCESS,spotify:track:2z6Shcl6vcBiJFs7YHbWuW,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:45.180845,romanianbits_reel_58_audio.mp4,Semantic Expressions (Original Mix),Vinyl Speed Adjust,SUCCESS,spotify:track:53gidhWcBTCPFZSpUJSg90,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:50.585346,romanianbits_reel_59_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:54.693318,romanianbits_reel_5_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:31:58.785924,romanianbits_reel_60_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:03.342207,romanianbits_reel_61_audio.mp4,Space Jam (Original Mix),SNISTR,SUCCESS,spotify:track:1KzU2P88OXlzAUY2s3QY8P,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:07.430384,romanianbits_reel_62_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:11.515523,romanianbits_reel_63_audio.mp4,Tatra Motokov (Original Mix),Huerta,SUCCESS,spotify:track:5cF8S2fpf83kKYIspZOWPW,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:15.677529,romanianbits_reel_64_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:19.747471,romanianbits_reel_65_audio.mp4,Sobre Tierra,DOJO ZONE,SUCCESS,spotify:track:0244OKILk9dN1DWu1Smt46,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:24.054957,romanianbits_reel_66_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:28.035090,romanianbits_reel_67_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:32.289806,romanianbits_reel_68_audio.mp4,Neptune,Vigorish,SUCCESS,spotify:track:14GF3cDZS76ju8b4mfqE3A,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:36.627014,romanianbits_reel_69_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:40.846886,romanianbits_reel_6_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:44.971050,romanianbits_reel_70_audio.mp4,On Up,Tiefschwarz,SUCCESS,spotify:track:3H2MCfEjF7DCHgTaMosOm8,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:49.308327,romanianbits_reel_71_audio.mp4,Radar,Supafly Inc,SUCCESS,spotify:track:5tU9JM1v72X7oM808Am6Fq,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:53.149668,romanianbits_reel_72_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:32:57.449502,romanianbits_reel_73_audio.mp4,Eurogenic (Sweely Remix),Herr Krank/Deborah Aime La Bagarre,SUCCESS,spotify:track:6wzu9fG21pP5euvfl1FwFo,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:01.741338,romanianbits_reel_74_audio.mp4,You're So Just Just (Original Mix),Rework,SUCCESS,spotify:track:6Ss1QOGzn0iG8hrRRSGrr9,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:05.380846,romanianbits_reel_75_audio.mp4,Realness,Apprentis,SUCCESS,spotify:track:2HCXW0jdC3BvxyU1lq8wFK,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:09.496968,romanianbits_reel_76_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:14.686076,romanianbits_reel_77_audio.mp4,Tormenta,Guzy,SUCCESS,spotify:track:138CGS1mZpB1O8NoJYqvxY,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:18.665764,romanianbits_reel_78_audio.mp4,Sutton Hoo Artefacts,Mayeul,SUCCESS,spotify:track:30aFefcDffssmPNAk5CC7P,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:22.897633,romanianbits_reel_79_audio.mp4,Theories (Original Mix),Andrew Soul,SUCCESS,spotify:track:1qtDsEHMaHyEcLX3sBe8pA,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:27.022804,romanianbits_reel_7_audio.mp4,Post Ronaldo,Oolon,SUCCESS,spotify:track:2kcahkfEwcNtsGUrz0n1s3,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:31.035159,romanianbits_reel_80_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:34.914950,romanianbits_reel_81_audio.mp4,Sweets From Heaven,Pirate Jams,SUCCESS,spotify:track:0Tz7XQvPKgOmBvgjYyGOoT,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:38.801961,romanianbits_reel_82_audio.mp4,Grace,Mattei & Omich,SUCCESS,spotify:track:28osQm2d7OBdvox7n3WfjE,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:42.619988,romanianbits_reel_83_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:46.489055,romanianbits_reel_84_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:50.538338,romanianbits_reel_85_audio.mp4,SLB,Shanti Celeste,SUCCESS,spotify:track:5aKVi02d8B8hoFuiqroPXT,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:54.382690,romanianbits_reel_86_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:33:58.645540,romanianbits_reel_87_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:02.376496,romanianbits_reel_88_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:06.867699,romanianbits_reel_89_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:10.829973,romanianbits_reel_8_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:14.784523,romanianbits_reel_90_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:18.938302,romanianbits_reel_91_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:22.754932,romanianbits_reel_92_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:26.715539,romanianbits_reel_93_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:30.693179,romanianbits_reel_94_audio.mp4,Your Loving Arms,Disco Fever,SUCCESS,spotify:track:2spwrVoJoiN1KWTxeFMRoi,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:34.923816,romanianbits_reel_95_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:39.027223,romanianbits_reel_96_audio.mp4,My New Glasses,Alex Sounds,SUCCESS,spotify:track:2ka3IGZr3jbqeRddQb5O9W,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:43.216362,romanianbits_reel_97_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:47.160169,romanianbits_reel_98_audio.mp4,,,NO_MATCH,,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:51.416571,romanianbits_reel_99_audio.mp4,String Theory (Original Mix),Mandar,SUCCESS,spotify:track:3mKr8NuxjqyjmwN0WpwZtd,,81226988d08b4a3d83f13fec1930b526
+2025-07-08T18:34:55.448639,romanianbits_reel_9_audio.mp4,Take Control,Dast (Italy),SUCCESS,spotify:track:235Eu9AM0jofUnIeaOMbQx,,81226988d08b4a3d83f13fec1930b526

@@ -28,7 +28,7 @@ def run_full_pipeline(instagram_username: str, playlist_name: str = DEFAULT_PLAY
     user_dir = os.path.join(DOWNLOAD_DIR, instagram_username)
     os.makedirs(user_dir, exist_ok=True)
     print("📹 Downloading reels...")
-    download_user_reels(instagram_username, limit, runId)
+    # download_user_reels(instagram_username, limit, runId)
 
     # Step 2: Recognise audio
     print("🎧 Recognising audio...")
