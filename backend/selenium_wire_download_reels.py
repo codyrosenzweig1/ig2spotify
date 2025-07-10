@@ -153,6 +153,8 @@ def download_user_reels(target_profile, limit, runId):
     reel_counter = 0
     seen_audio_bases = set()
     all_requests = []
+    fail_count = 0
+    MAX_FAILS = 10  # Stop after 5 consecutive failed attempts
 
     while True:
         if reel_counter >= limit:
@@ -160,51 +162,58 @@ def download_user_reels(target_profile, limit, runId):
             break
 
         driver.requests.clear()
-        watch_and_capture_packets()
-        all_requests.extend(driver.requests)
+        if not watch_and_capture_packets():
+            print("⚠ Video not found, moving on...")
+            fail_count += 1
+        else:
+            fail_count = 0  # Reset if we found a video
 
+        all_requests.extend(driver.requests)
         audio_packets = find_audio_stream_packets(all_requests)
 
-        # Filter: Only streams that begin at byte 0 (likely full audio)
         valid_streams = [(base, segs) for base, segs in audio_packets.items() if any(s[0] == 0 for s in segs)]
-        if not valid_streams:
+        success = False
+
+        if valid_streams:
+            best_stream_base, best_segments = valid_streams[-1]
+
+            if best_stream_base not in seen_audio_bases:
+                print("✔ Selected new audio stream:")
+                for start, end, _ in best_segments:
+                    print(f"     - {start} to {end}")
+                seen_audio_bases.add(best_stream_base)
+                best_segments.sort()
+                dest_file = os.path.join(out_dir, f"{target_profile}_reel_{reel_counter}_audio.mp4")
+                download_audio_segments(best_stream_base, best_segments, dest_file)
+                reel_counter += 1
+                success = True
+                all_requests = [r for r in all_requests if best_stream_base not in r.url]
+            else:
+                print("⚠ Skipping duplicate audio stream.")
+        else:
             print("✖ No valid stream with bytestart=0 found.")
-            continue
 
-        # Select the last matching stream as most recent
-        best_stream_base, best_segments = valid_streams[-1]
-
-        if best_stream_base in seen_audio_bases:
-            print("⚠ Skipping duplicate audio stream. Already processed:")
-            print(f"   Base: {best_stream_base}")
-            for start, end, _ in best_segments:
-                print(f"     - {start} to {end}")
+        if success:
+            fail_count = 0  # Reset fail counter on success
+            if runId in PROGRESS_DATA:
+                PROGRESS_DATA[runId]["reels_downloaded"] += 1
+                print(PROGRESS_DATA[runId]["reels_downloaded"], "reels downloaded so far.")
+            else:
+                print(f"⚠ WARNING: runId {runId} not found in PROGRESS_DATA")
         else:
-            print("✔ Selected new audio stream:")
-            print(f"   Base: {best_stream_base}")
-            for start, end, _ in best_segments:
-                print(f"     - {start} to {end}")
+            fail_count += 1
 
-            seen_audio_bases.add(best_stream_base)
-            best_segments.sort()
-            dest_file = os.path.join(out_dir, f"{target_profile}_reel_{reel_counter}_audio.mp4") # change mp4 to mp3 to download straight away as mp3
-            download_audio_segments(best_stream_base, best_segments, dest_file)
-            reel_counter += 1
-
-            # Cleanup: remove requests related to the used audio stream to avoid duplicates and free memory
-            all_requests = [r for r in all_requests if best_stream_base not in r.url]
-
-        # Increment progress data
-        if runId in PROGRESS_DATA:
-            PROGRESS_DATA[runId]["reels_downloaded"] += 1
-            print(PROGRESS_DATA[runId]["reels_downloaded"], "reels downloaded so far.")
-        else:
-            print(f"⚠ WARNING: runId {runId} not found in PROGRESS_DATA")
-
-        if not go_to_next_reel() or not watch_and_capture_packets():
+        # Safety check: Stop after too many consecutive fails
+        if fail_count >= MAX_FAILS:
+            print(f"⚠ Too many consecutive failed attempts ({MAX_FAILS}). Stopping.")
             break
-    
-    PROGRESS_DATA[runId]["limit"] = reel_counter # incase we break earlier due to poor internet or insta bloxking us. 
+
+        # Always try moving to next reel
+        if not go_to_next_reel():
+            print("⚠ Failed to move to next reel. Stopping.")
+            break
+
+    PROGRESS_DATA[runId]["limit"] = reel_counter  # Update actual number of reels downloaded
     driver.quit()
 
 # if __name__ == "__main__":

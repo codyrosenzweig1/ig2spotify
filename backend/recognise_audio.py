@@ -7,7 +7,7 @@ import uuid
 from dotenv import load_dotenv
 from acrcloud.recognizer import ACRCloudRecognizer
 from spotify_integration.csv_reader import append_history, write_current, read_history
-from backend.app.main import PROGRESS_DATA
+from backend.progress import PROGRESS_DATA
 
 # -----------------------------------------------------------------------------
 # Run ID & Current Records
